@@ -78,6 +78,12 @@ Run the script with CLI arguments:
 yarn start --day 2025-09-10 --start 10:00 --end 11:00 --queues Q123,Q456 --users U123,U456
 ```
 
+Or with Node after a build:
+
+```bash
+node dist/index.js --day 2025-09-10 --start 10:00 --end 11:00 --queues Q123,Q456 --users U123,U456
+```
+
 ### CLI Arguments
 
 | Flag       | Description                                                                 |
@@ -92,6 +98,17 @@ yarn start --day 2025-09-10 --start 10:00 --end 11:00 --queues Q123,Q456 --users
 
 ```bash
 yarn start   --day 2025-09-10   --start 09:00   --end 10:00   --queues 12345,67890   --users abcdef,ghijkl
+```
+
+Without yarn:
+
+```bash
+node dist/index.js \
+  --day 2025-09-10 \
+  --start 09:00 \
+  --end 10:00 \
+  --queues 12345,67890 \
+  --users abcdef,ghijkl
 ```
 
 This will:
@@ -136,11 +153,24 @@ Run in watch mode during development:
 yarn dev
 ```
 
+or:
+
+```bash
+npm run dev
+```
+
 Lint and fix issues:
 
 ```bash
 yarn lint
 yarn lint:fix
+```
+
+or:
+
+```bash
+npm run lint
+npm run lint:fix
 ```
 
 ---
