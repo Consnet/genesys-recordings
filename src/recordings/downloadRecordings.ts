@@ -3,6 +3,7 @@ import type platformClient from 'purecloud-platform-client-v2';
 import { ExtractParams } from '../analytics/extractInteractions';
 import { ValidConversation } from '../analytics/getValidConversations';
 import { CONFIG } from '../config/env';
+import { GenesysApis } from '../genesys/client';
 import { Recording } from '../genesys/recording.types';
 import { getHourInterval } from '../util/time';
 import { buildCsvRecord, CsvRecord } from './buildCsvRecord';
@@ -47,7 +48,7 @@ function validateItem(
 }
 
 interface ProcessRecordingsOptions {
-  recordingApi: platformClient.RecordingApi;
+  apis: GenesysApis;
   recordings: Recording[];
   conversations: ValidConversation[];
   params: ExtractParams;
@@ -57,7 +58,7 @@ interface ProcessRecordingsOptions {
 }
 
 export async function processRecordings({
-  recordingApi,
+  apis,
   recordings,
   conversations,
   params,
@@ -79,7 +80,7 @@ export async function processRecordings({
   let chunkNo = 0;
   for (const chunk of recordingChunks) {
     chunkNo++;
-    const batchJob = await recordingApi.postRecordingBatchrequests({
+    const batchJob = await apis.recording.postRecordingBatchrequests({
       batchDownloadRequestList: chunk,
     });
     if (!batchJob.id) {
@@ -87,13 +88,13 @@ export async function processRecordings({
       continue;
     }
     while (true) {
-      const result = await recordingApi.getRecordingBatchrequest(batchJob.id);
+      const result = await apis.recording.getRecordingBatchrequest(batchJob.id);
       if (result.resultCount && result.resultCount === result.expectedResultCount) {
         break;
       }
       await sleep(pollIntervalMs);
     }
-    const resultInfo = await recordingApi.getRecordingBatchrequest(batchJob.id);
+    const resultInfo = await apis.recording.getRecordingBatchrequest(batchJob.id);
     if (!resultInfo.results) {
       console.error(`No chunks returned for chunk ${chunkNo}`);
       continue;
@@ -114,7 +115,15 @@ export async function processRecordings({
       try {
         await downloadWithRetry(item.resultUrl, filePath);
         downloaded++;
-        const record = buildCsvRecord(reqItem, recordings, conversations, fileName, filePath);
+        const record = await buildCsvRecord(
+          reqItem,
+          recordings,
+          conversations,
+          fileName,
+          filePath,
+          apis.users,
+          apis.routing
+        );
         if (record) {
           csvRecords.push(record);
         }

@@ -1,6 +1,8 @@
 import type platformClient from 'purecloud-platform-client-v2';
 import { ValidConversation } from '../analytics/getValidConversations';
 import { Recording } from '../genesys/recording.types';
+import { getAgentDetail } from '../util/getAgentDetail';
+import { getWrapupName } from '../util/getWrapUp';
 
 export interface CsvRecord {
   conversationId: string;
@@ -50,16 +52,18 @@ function getFallbackWrapup(
   return undefined;
 }
 
-export function buildCsvRecord(
+export async function buildCsvRecord(
   item: platformClient.Models.BatchDownloadRequest,
   recordings: Recording[],
   conversations: ValidConversation[],
   fileName: string,
-  filePath: string
-): CsvRecord | null {
+  filePath: string,
+  usersApi: platformClient.UsersApi,
+  routingApi: platformClient.RoutingApi
+): Promise<CsvRecord | null> {
   const recording = recordings.find(r => r.recordingId === item.recordingId);
   if (!recording) {
-    //This should not happen, like ever
+    //This should not happen, ever
     console.log(
       `Recording Not found(csv): Conversation ID: ${item.conversationId} recording: ${item.recordingId}`
     );
@@ -69,15 +73,19 @@ export function buildCsvRecord(
     c => c.conversationId === recording.conversationId && c.session.peerId === recording.sessionId
   );
   if (!conv) {
-    //This should not happen, but probably means peerId on session not matching recording sessionID
+    //This can happen - It means that the recording is for an agent that is not in our filter criteria
+    //peerId does not match a valid session, but check needs to happen before download
     console.log(
       `Not found(csv): Conversation ID: ${item.conversationId} session: ${recording.sessionId} recording: ${item.recordingId}`
     );
     return null;
   }
-  const wrapup =
+  const wrapupCode =
     conv.session.wrapup ?? getFallbackWrapup(conversations, recording.conversationId) ?? '';
 
+  const wrapupName = await getWrapupName(wrapupCode, routingApi);
+  const agent = await getAgentDetail(conv.userId, usersApi);
+  //const wrapup = await get();
   return {
     conversationId: recording.conversationId,
     recordingId: recording.recordingId,
@@ -88,11 +96,11 @@ export function buildCsvRecord(
     mediaType: recording.mediaType ?? '',
     durationMs: getDurationMs(recording.startTime, recording.endTime),
     agentId: conv.userId,
-    agentName: 'unknown',
-    teamLeaderName: 'unknown',
+    agentName: agent.name,
+    teamLeaderName: agent.managerName,
     callDirection: conv.session.direction,
-    wrapupCode: wrapup,
-    wrapupName: 'unknown',
+    wrapupCode: wrapupCode,
+    wrapupName: wrapupName,
     fileName,
     filePath,
   };

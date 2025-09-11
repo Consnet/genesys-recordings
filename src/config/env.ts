@@ -36,3 +36,38 @@ export const CONFIG = {
   BATCH_SIZE: 50,
   MIN_DISK_SPACE_MB: 500,
 };
+
+export const TARGET_AGENTS = ['Samantha Koti', 'Jade Gordon'];
+
+// export const TARGET_AGENTS = [
+//   'Chester Buys',
+//   'Joddy Moshidi',
+//   'Luvuyo Dlamini',
+//   'Twanano Macheke',
+//   'Mbuyiselo Mkwanazi',
+//   'Maya Kone',
+//   'Boitumelo Molekane',
+//   'Rejoyce Nkomonde',
+//   'Johanna Lebusa',
+//   'Nokuthula Mnikathi',
+//   'Dorette Sihlangu',
+//   'Boipelo Kolwane',
+//   'Mpho Machaba',
+//   'Ro Shane Da Gama',
+//   'Thando Radebe',
+//   'Jordan Van Aardt',
+//   'Meldon Nyamakazi',
+//   'Nteboheng Letele',
+//   'Nthabiseng Mosia',
+//   'Lehlonono Melda Makhomi',
+//   'Nonhle Dlamini',
+//   'Nthabiseng Ramabitle',
+//   'Sandasanda Mkhabela',
+//   'Kopano Segametsi Hlalele',
+//   'Usisiphokazi Manxoyi',
+//   'Rinae Mphephu',
+//   'Samantha Koti',
+//   'Thobile Olga Khuzwayo',
+//   'Tshwaro Motlhaleemang',
+//   'Keamogetswe Malebane',
+// ];

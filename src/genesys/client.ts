@@ -1,10 +1,11 @@
-// src/genesys/client.ts
 import platformClient from 'purecloud-platform-client-v2';
 import type { Env } from '../config/env';
 
 export interface GenesysApis {
   analytics: platformClient.AnalyticsApi;
   recording: platformClient.RecordingApi;
+  users: platformClient.UsersApi;
+  routing: platformClient.RoutingApi;
 }
 
 export async function initGenesysApis(env: Env): Promise<GenesysApis> {
@@ -15,5 +16,7 @@ export async function initGenesysApis(env: Env): Promise<GenesysApis> {
   return {
     analytics: new platformClient.AnalyticsApi(),
     recording: new platformClient.RecordingApi(),
+    users: new platformClient.UsersApi(),
+    routing: new platformClient.RoutingApi(),
   };
 }

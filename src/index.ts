@@ -60,11 +60,11 @@ async function main(): Promise<void> {
   const ids = [...new Set(conversations.map(c => c.conversationId).filter(Boolean))];
   // eslint-disable-next-line no-console
   console.log(ids);
-  const recordings = await extractRecordingMetadata(apis.recording, ids, params);
+  const recordings = await extractRecordingMetadata(apis.recording, ids, conversations, params);
   // eslint-disable-next-line no-console
   console.log(recordings);
   const { failed, downloaded } = await processRecordings({
-    recordingApi: apis.recording,
+    apis,
     recordings,
     conversations,
     params,
