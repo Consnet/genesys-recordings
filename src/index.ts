@@ -42,7 +42,7 @@ async function main(): Promise<void> {
     windowStart: args.start,
     windowEnd: args.end,
     orgTz: env.ORG_TIMEZONE,
-    previousDayBuffer: 1,
+    previousDayBuffer: env.PREVIOUS_DAY_BUFFER,
     queueIds: args.queues,
     userIds: args.users,
     downloadDir: env.DOWNLOAD_DIR,

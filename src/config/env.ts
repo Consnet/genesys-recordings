@@ -12,6 +12,7 @@ const EnvSchema = z.object({
   DEFAULT_QUEUE_IDS: z.string().optional(),
   DEFAULT_USER_IDS: z.string().optional(),
   DOWNLOAD_DIR: z.string().min(1),
+  PREVIOUS_DAY_BUFFER: z.coerce.number().min(1),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

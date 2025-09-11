@@ -33,7 +33,7 @@ This project extracts **interactions** and associated **recordings** from Genesy
 Clone this repo and install dependencies:
 
 ```bash
-git clone https://github.com/your-org/genesys-recording-extractor.git
+git clone https://github.com/Consnet/genesys-recordings.git
 cd genesys-recording-extractor
 yarn install
 ```
