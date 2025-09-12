@@ -85,7 +85,6 @@ export async function buildCsvRecord(
 
   const wrapupName = await getWrapupName(wrapupCode, routingApi);
   const agent = await getAgentDetail(conv.userId, usersApi);
-  //const wrapup = await get();
   return {
     conversationId: recording.conversationId,
     recordingId: recording.recordingId,

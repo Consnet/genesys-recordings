@@ -10,17 +10,21 @@ export async function getWrapupName(
     return '';
   }
 
-  const wrap = WrapupCache['wrapupCode'];
-  if (!wrap) {
+  const wrap = WrapupCache[wrapupCode];
+  if (wrap) {
+    return wrap;
+  }
+
+  try {
     const wrapup = await routingApi.getRoutingWrapupcode(wrapupCode);
     if (wrapup) {
       const name = wrapup.name ?? wrapupCode;
       WrapupCache[wrapupCode] = name;
       return name;
-    } else {
-      WrapupCache[wrapupCode] = 'Unknown Wrapup';
-      return 'Unknown Wrapup';
     }
+  } catch {
+    console.log(`Wrapup Exception: ${wrapupCode}`);
   }
-  return wrap;
+  WrapupCache[wrapupCode] = wrapupCode;
+  return wrapupCode;
 }

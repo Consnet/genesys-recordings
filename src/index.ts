@@ -1,5 +1,6 @@
 import { extractInteractions, ExtractParams } from './analytics/extractInteractions';
 import { env, parseCsv } from './config/env';
+import { getAgentIds } from './config/loadAgentNames';
 import { initGenesysApis } from './genesys/client';
 import { processRecordings } from './recordings/downloadRecordings';
 import { extractRecordingMetadata } from './recordings/extractRecordingMeta';
@@ -36,6 +37,9 @@ function parseArgs(argv: string[]): CliArgs {
 async function main(): Promise<void> {
   const args = parseArgs(process.argv);
   const apis = await initGenesysApis(env);
+  const agentFromFile = await getAgentIds(apis.users);
+
+  const users = agentFromFile.length > 0 ? agentFromFile : args.users;
 
   const params: ExtractParams = {
     day: args.day,
@@ -44,12 +48,11 @@ async function main(): Promise<void> {
     orgTz: env.ORG_TIMEZONE,
     previousDayBuffer: env.PREVIOUS_DAY_BUFFER,
     queueIds: args.queues,
-    userIds: args.users,
+    userIds: users,
     downloadDir: env.DOWNLOAD_DIR,
   };
 
   const conversations = await extractInteractions(apis.analytics, params);
-  console.log(JSON.stringify(conversations));
 
   // eslint-disable-next-line no-console
   console.log(
@@ -58,11 +61,9 @@ async function main(): Promise<void> {
 
   // List of Unique Conversation ids
   const ids = [...new Set(conversations.map(c => c.conversationId).filter(Boolean))];
-  // eslint-disable-next-line no-console
-  console.log(ids);
+
   const recordings = await extractRecordingMetadata(apis.recording, ids, conversations, params);
-  // eslint-disable-next-line no-console
-  console.log(recordings);
+
   const { failed, downloaded } = await processRecordings({
     apis,
     recordings,

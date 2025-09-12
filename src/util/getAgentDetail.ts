@@ -17,9 +17,8 @@ export async function getAgentDetail(
   if (!agent) {
     const user = await usersApi.getUser(userId, { expand: ['manager'] });
     if (user?.name) {
-      const managerId = user.manager?.id ?? '';
-      const manager = await getAgentDetail(managerId, usersApi);
-      const managerName = manager?.name ?? '';
+      const managerId = user.manager?.id ?? 'No Manager';
+      const managerName = user.manager?.name ?? 'No Manager';
       const newAgent = { name: user.name, managerId: managerId, managerName: managerName };
       AgentCache[userId] = newAgent;
       return newAgent;

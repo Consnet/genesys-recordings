@@ -8,6 +8,7 @@ import { Recording } from '../genesys/recording.types';
 import { getHourInterval } from '../util/time';
 import { buildCsvRecord, CsvRecord } from './buildCsvRecord';
 import { downloadWithRetry } from './downloadWithRetry';
+import { getRecordingBatch } from './getRecordingsBatch';
 import { writeCsvRecords } from './writeCsvRecords';
 
 function chunkArray<T>(arr: T[], size: number): T[][] {
@@ -18,7 +19,7 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
   return out;
 }
 
-const sleep = (ms: number): Promise<void> => new Promise<void>(res => setTimeout(res, ms));
+export const sleep = (ms: number): Promise<void> => new Promise<void>(res => setTimeout(res, ms));
 
 function validateItem(
   item: platformClient.Models.BatchDownloadJobResult | undefined,
@@ -80,10 +81,9 @@ export async function processRecordings({
   let chunkNo = 0;
   for (const chunk of recordingChunks) {
     chunkNo++;
-    const batchJob = await apis.recording.postRecordingBatchrequests({
-      batchDownloadRequestList: chunk,
-    });
-    if (!batchJob.id) {
+    const batchJob = await getRecordingBatch(apis.recording, chunk);
+
+    if (!batchJob?.id) {
       console.error(`No Batchjob ID returned by Genesys for chunk ${chunkNo}`);
       continue;
     }
