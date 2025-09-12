@@ -6,7 +6,6 @@ import { CsvRecord, getDurationMs } from './buildCsvRecord';
 
 export async function buildCsvMissing(
   item: ValidConversation,
-  conversations: ValidConversation[],
   usersApi: platformClient.UsersApi,
   routingApi: platformClient.RoutingApi
 ): Promise<CsvRecord | null> {

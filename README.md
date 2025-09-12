@@ -20,8 +20,8 @@ This project extracts **interactions** and associated **recordings** from Genesy
 
 ## Requirements
 
-- **Node.js** (v22 or newer recommended)
-- **Yarn** (package manager)
+- **Node.js** (v18 or newer recommended)
+- **Yarn** (package manager if developing)
 - **Genesys Cloud credentials** with permissions to:
   - Analytics API
   - Recording API
@@ -92,6 +92,8 @@ node dist/index.js --day 2025-09-10 --start 10:00 --end 11:00 --queues Q123,Q456
 
 ### CLI Arguments
 
+Note all arguments are optional and don't have to be provided.
+
 | Flag       | Description                                                                 |
 | ---------- | --------------------------------------------------------------------------- |
 | `--day`    | The date of interactions to extract (required, format: `YYYY-MM-DD`)        |
@@ -99,6 +101,27 @@ node dist/index.js --day 2025-09-10 --start 10:00 --end 11:00 --queues Q123,Q456
 | `--end`    | End time for extraction window (default: from `env.DEFAULT_WINDOW_END`)     |
 | `--queues` | Comma-separated queue IDs to filter (default: `env.DEFAULT_QUEUE_IDS`)      |
 | `--users`  | Comma-separated user IDs to filter (default: `env.DEFAULT_USER_IDS`)        |
+
+### Parameter Behaviour
+
+| Parameter | Description                                                                 |
+| --------- | --------------------------------------------------------------------------- |
+| DAY       | Optional: can be provided via CLI or .env file. If not provided, calls will |
+|           | be extracted for the current day                                            |
+| START     | Mandatory: From `env.DEFAULT_WINDOW_START`) or cli `--start` in local time  |
+| END       | Mandatory: From `env.DEFAULT_WINDOW_END`) or cli `--end` in local time      |
+| QUEUES    | Optional: (from: `env.DEFAULT_QUEUE_IDS`). If not provided will download    |
+|           | all queues                                                                  |
+| USERS     | Optional: Comma-separated Genesys userIDs in `.env` file or can be provided |
+|           | in `agents.json` file in root of the project. If no agents are provided     |
+|           | the script will download interactions for all agents                        |
+
+**agents.json**
+You can create a file in this format in the root of the project directory to restrict the download to specific agents
+
+```json
+["Agent Name1", "Agent Name2"]
+```
 
 ### Example
 
@@ -145,7 +168,7 @@ Recordings are saved under the configured `DOWNLOAD_DIR`.
 
 ## Error Handling
 
-- If `--day` is missing, the script will throw an error.
+- If `START` or `END` is missing, the script will throw an error.
 - If API calls fail (auth or network), the error will be logged, and the process will exit with code `1`.
 - Failed downloads are reported but do not stop the process.
 

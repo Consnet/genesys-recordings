@@ -41,8 +41,16 @@ async function main(): Promise<void> {
 
   const users = agentFromFile.length > 0 ? agentFromFile : args.users;
 
+  let day = '';
+  if (!args.day.trim) {
+    const today = new Date().toISOString().split('T')[0];
+    day = today ?? '';
+  } else {
+    day = args.day;
+  }
+
   const params: ExtractParams = {
-    day: args.day,
+    day: day,
     windowStart: args.start,
     windowEnd: args.end,
     orgTz: env.ORG_TIMEZONE,
