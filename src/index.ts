@@ -42,7 +42,7 @@ async function main(): Promise<void> {
   const users = agentFromFile.length > 0 ? agentFromFile : args.users;
 
   let day = '';
-  if (!args.day.trim) {
+  if (!args.day.trim()) {
     const today = new Date().toISOString().split('T')[0];
     day = today ?? '';
   } else {

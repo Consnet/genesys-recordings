@@ -6,7 +6,7 @@ export async function getWrapupName(
   wrapupCode: string,
   routingApi: platformClient.RoutingApi
 ): Promise<string> {
-  if (!wrapupCode.trim) {
+  if (!wrapupCode.trim()) {
     return 'No Wrapup';
   }
 
