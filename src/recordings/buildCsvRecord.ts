@@ -31,14 +31,14 @@ function parseTimeMs(iso?: string): number | null {
   return Number.isNaN(t) ? null : t;
 }
 
-function getDurationMs(start?: string, end?: string): number {
+export function getDurationMs(start?: string, end?: string): number {
   const startMs = parseTimeMs(start);
   const endMs = parseTimeMs(end);
   const durationMs = startMs !== null && endMs !== null && endMs >= startMs ? endMs - startMs : 0;
   return durationMs;
 }
 
-function getFallbackWrapup(
+export function getFallbackWrapup(
   conversations: ValidConversation[],
   conversationId: string
 ): string | undefined {
@@ -73,15 +73,14 @@ export async function buildCsvRecord(
     c => c.conversationId === recording.conversationId && c.session.peerId === recording.sessionId
   );
   if (!conv) {
-    //This can happen - It means that the recording is for an agent that is not in our filter criteria
-    //peerId does not match a valid session, but check needs to happen before download
+    //This should not happen - It means that the recording is for an agent that is not in our filter criteria
+    //peerId does not match a valid session, but check happens before download, so should not be here
     console.log(
       `Not found(csv): Conversation ID: ${item.conversationId} session: ${recording.sessionId} recording: ${item.recordingId}`
     );
     return null;
   }
-  const wrapupCode =
-    conv.session.wrapup ?? getFallbackWrapup(conversations, recording.conversationId) ?? '';
+  const wrapupCode = conv.session.wrapup ?? '';
 
   const wrapupName = await getWrapupName(wrapupCode, routingApi);
   const agent = await getAgentDetail(conv.userId, usersApi);

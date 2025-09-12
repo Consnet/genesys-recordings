@@ -7,7 +7,7 @@ export async function getWrapupName(
   routingApi: platformClient.RoutingApi
 ): Promise<string> {
   if (!wrapupCode.trim) {
-    return '';
+    return 'No Wrapup';
   }
 
   const wrap = WrapupCache[wrapupCode];

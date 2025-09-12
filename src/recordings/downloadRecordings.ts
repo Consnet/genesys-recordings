@@ -6,8 +6,10 @@ import { CONFIG } from '../config/env';
 import { GenesysApis } from '../genesys/client';
 import { Recording } from '../genesys/recording.types';
 import { getHourInterval } from '../util/time';
+import { buildCsvMissing } from './buildCsvMissing';
 import { buildCsvRecord, CsvRecord } from './buildCsvRecord';
 import { downloadWithRetry } from './downloadWithRetry';
+import { conversationsMissingRecordings } from './getMissingRecordings';
 import { getRecordingBatch } from './getRecordingsBatch';
 import { writeCsvRecords } from './writeCsvRecords';
 
@@ -141,6 +143,24 @@ export async function processRecordings({
     );
     await writeCsvRecords(csvPath, csvRecords);
   }
+
+  //Do a final check. Are there segments where no recordings are available?
+  const missing = conversationsMissingRecordings(conversations, recordings);
+  const missingCSV: CsvRecord[] = [];
+  for (const item of missing) {
+    try {
+      const record = await buildCsvMissing(item, conversations, apis.users, apis.routing);
+      if (record) {
+        missingCSV.push(record);
+      }
+    } catch (error) {
+      console.warn(
+        `Can't process missing record conversationId: ${item.conversationId}. ${(error as Error).message}`
+      );
+    }
+  }
+  const csvPath = path.join(params.downloadDir, `${params.day}_${hourInterval}_missing.csv`);
+  await writeCsvRecords(csvPath, missingCSV);
 
   console.log(`Done. Downloaded=${downloaded}, Failed=${failedDownloads}`);
   return { failed: failedDownloads, downloaded };

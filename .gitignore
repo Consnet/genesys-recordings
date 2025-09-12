@@ -1,4 +1,4 @@
-agents.json
+agents*.json
 
 # Dependencies
 node_modules/

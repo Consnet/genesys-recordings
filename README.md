@@ -51,6 +51,12 @@ npm install
 npm run build
 ```
 
+Note, on Windows your build may fail with lots of prettier complaints. Execute the below command in the project root directory before a build:
+
+```bash
+npx prettier --write .
+```
+
 ---
 
 ## Configuration
